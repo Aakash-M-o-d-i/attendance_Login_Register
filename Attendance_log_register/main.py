@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash 
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -7,10 +7,11 @@ app = Flask(__name__)
 # MySQL Configuration
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "1111"
-app.config["MYSQL_DB"] = "attendencedb"
+app.config["MYSQL_PASSWORD"] = "rajeshji11"
+# app.config["MYSQL_PASSWORD"] = "1111" # aakash
+app.config["MYSQL_DB"] = "attendancedb"
 # not need yet, but don't delete
-# app.config["SECRET_KEY"] = "1254AHG"  # Required for flash messages & session
+app.config["SECRET_KEY"] = "1254AHG"  # Required for flash messages & session
 
 # MySQL connection
 mysql = MySQL(app)
@@ -78,7 +79,7 @@ def login():
             if hashed_password is None:  # Check if password is NULL
                 flash("Invalid login credentials!", "error")
                 return render_template('login.html')
-
+            
             if check_password_hash(hashed_password, password):
                 session['user_id'] = user_id
                 session['username'] = username
@@ -96,9 +97,7 @@ def login():
 # Dashboard Route (Dummy)
 @app.route('/dashboard')
 def dashboard():
-    if 'user_id' in session:
-        return f"Welcome, {session['username']}! This is your dashboard."
-    return redirect(url_for('login'))
+    return render_template('dashboard.html', username="John Doe")
 
 
 if __name__ == '__main__':
