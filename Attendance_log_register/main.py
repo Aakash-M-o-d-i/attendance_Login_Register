@@ -1,7 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from flask import Flask
 from werkzeug.security import generate_password_hash, check_password_hash
-from db_config import get_db_connection 
+from db_config import get_db_connection
+ 
 
 app = Flask(__name__)
 
