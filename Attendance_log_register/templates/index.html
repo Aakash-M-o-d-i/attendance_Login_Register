@@ -1,126 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Add the css file for static folder -->
-  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
-  <title>CTUAP LAB Attendance</title>
-</head>
-
-<body>
-  <div id="webcrumbs">
-    <div class="w-[600px] bg-white rounded-lg shadow-lg p-8">
-      <form class="space-y-6">
-        <div class="relative"> <input type="text" placeholder="Full Name"
-            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300" />
-          <span class="material-symbols-outlined absolute right-3 top-3 text-neutral-400">person</span> </div>
-        <div class="relative"> <input type="text" placeholder="Enrollment Number"
-            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300" />
-          <span class="material-symbols-outlined absolute right-3 top-3 text-neutral-400">numbers</span> </div>
-
-        <div class="relative"> <select
-            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none transition-all duration-300">
-            <option value="">Select Department</option>
-            <option value="cs">Computer Science</option>
-            <option value="it">Chemistry</option>
-            <option value="ec">Botany</option>
-            <option value="me">Geology</option>
-            <option value="me">BBA</option>
-          </select> <span class="material-symbols-outlined absolute right-3 top-3 text-neutral-400">school</span> </div>
-        <div class="relative"> <select
-            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none transition-all duration-300">
-            <option value="">Select Semester</option>
-            <option value="1">Semester 1</option>
-            <option value="2">Semester 2</option>
-            <option value="3">Semester 3</option>
-            <option value="4">Semester 4</option>
-            <option value="5">Semester 5</option>
-            <option value="6">Semester 6</option>
-            <option value="7">Semester 7</option>
-            <option value="8">Semester 8</option>
-          </select> <span class="material-symbols-outlined absolute right-3 top-3 text-neutral-400">schedule</span>
-        </div>
-        <div class="relative"> <input type="email" placeholder="Email Address"
-            class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300" />
-          <span class="material-symbols-outlined absolute right-3 top-3 text-neutral-400">mail</span> </div>
-        <div class="relative">
-          <div
-            class="w-full h-[200px] border-2 border-dashed border-neutral-300 rounded-lg flex flex-col items-center justify-center hover:border-primary-500 transition-all duration-300">
-            <video id="video" class="w-full h-full object-cover rounded-lg hidden"></video>
-            <div class="flex flex-col items-center"> <span
-                class="material-symbols-outlined text-4xl text-neutral-400">photo_camera</span>
-              <p class="mt-2 text-sm text-neutral-500">Click to capture photo</p>
-            </div>
-          </div> <canvas id="canvas" class="hidden"></canvas>
-        </div> <button type="submit"
-          class="w-full bg-primary-500 text-white py-3 rounded-lg hover:bg-primary-600 transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined">how_to_reg</span> Submit Attendance </button>
-      </form>
-    </div>
-  </div>
-
-
-</body>
-
-</html>
-
-<!-- 
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <title>CTUAP LAB Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
+
+<body class="bg-light">
     <div class="container mt-5">
-        <h2>Register</h2>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}" role="alert">
-                    {{ message }}
+        <div class="card shadow-lg p-4">
+            <h3 class="text-center mb-4">CTUAP LAB Attendance</h3>
+            <form id="attendanceForm" method="POST" action="/submit">
+                
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+                    </div>
                 </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-        <form method="POST" action="{{ url_for('register') }}">
-            <div class="mb-3">
-                <label for="username" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="mb-3">
-                <label for="dept" class="form-label">Department</label>
-                <select class="form-select" id="dept" name="dept" required>
-                    <option value="">Select your department</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Chemistry">Chemistry</option>
-                    <option value="Botany">Botany</option>
-                    <option value="Geology">Geology</option>
-                    <option value="BBA">BBA</option>
-                </select>
-            </div>    
-            <div class="mb-3">
-              <label for="email" class="form-label">Enrollment Number</label>
-              <input type="email" class="form-control" id="Number" name="Number" required>
-          </div>        
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <div class="mb-3">
-                <label for="confirm_password" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+
+                <!-- Enrollment Number -->
+                <div class="mb-3">
+                    <label class="form-label">Enrollment Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-card-list"></i></span>
+                        <input type="text" name="enrollment_number" class="form-control" placeholder="Enter enrollment number" required>
+                    </div>
+                </div>
+
+                <!-- Department Selection -->
+                <div class="mb-3">
+                    <label class="form-label">Department</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                        <select name="department" class="form-select" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Botany">Botany</option>
+                            <option value="Geology">Geology</option>
+                            <option value="BBA">BBA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Semester Selection -->
+                <div class="mb-3">
+                    <label class="form-label">Semester</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                        <select name="semester" class="form-select" required>
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Email Address -->
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+                    </div>
+                </div>
+
+                <!-- Date & Time (Auto-filled) -->
+                <div class="mb-3">
+                    <label class="form-label">Date & Time</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                        <input type="text" id="datetime" name="datetime" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <!-- Camera Capture -->
+                <div class="mb-3 text-center">
+                    <video id="video" class="border rounded" width="300" height="200" autoplay></video><br>
+                    <button type="button" id="capture" class="btn btn-primary mt-2"><i class="bi bi-camera"></i> Capture Photo</button>
+                </div>
+
+                <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
+                <input type="hidden" name="image_data" id="image_data">
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100 mt-3"><i class="bi bi-check-circle"></i> Submit Attendance</button>
+            </form>
+        </div>
     </div>
+
+    <script>
+        // Auto-fill current date & time
+        function updateDateTime() {
+            document.getElementById('datetime').value = new Date().toLocaleString();
+        }
+        updateDateTime();
+
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const imageDataInput = document.getElementById('image_data');
+
+        // Access the webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(error => { console.error("Error accessing webcam:", error); });
+
+        // Capture the image
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert to base64 and store in hidden input
+            const imageData = canvas.toDataURL('image/png');
+            imageDataInput.value = imageData;
+
+            // Display success message
+            alert("Photo captured successfully!");
+        });
+    </script>
 </body>
-</html> -->
+</html>
+
+
+
+
