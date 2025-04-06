@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,20 @@
     <div class="container mt-5">
         <div class="card shadow-lg p-4">
             <h3 class="text-center mb-4">CTUAP LAB Attendance</h3>
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
             <form id="attendanceForm" method="POST" action="/submit">
-                
                 <!-- Full Name -->
                 <div class="mb-3">
                     <label class="form-label">Full Name</label>
@@ -29,11 +42,13 @@
                     <label class="form-label">Enrollment Number</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-                        <input type="text" name="enrollment_number" class="form-control" placeholder="Enter enrollment number" required>
+                        <input type="text" name="enrollment_number" class="form-control"
+                            placeholder="Enter enrollment number" required pattern="\d{8}"
+                            title="Enrollment number must be exactly 8 digits">
                     </div>
                 </div>
 
-                <!-- Department Selection -->
+                <!-- Department -->
                 <div class="mb-3">
                     <label class="form-label">Department</label>
                     <div class="input-group">
@@ -49,7 +64,7 @@
                     </div>
                 </div>
 
-                <!-- Semester Selection -->
+                <!-- Semester -->
                 <div class="mb-3">
                     <label class="form-label">Semester</label>
                     <div class="input-group">
@@ -68,7 +83,7 @@
                     </div>
                 </div>
 
-                <!-- Email Address -->
+                <!-- Email -->
                 <div class="mb-3">
                     <label class="form-label">Email Address</label>
                     <div class="input-group">
@@ -77,7 +92,7 @@
                     </div>
                 </div>
 
-                <!-- Date & Time (Auto-filled) -->
+                <!-- Date & Time -->
                 <div class="mb-3">
                     <label class="form-label">Date & Time</label>
                     <div class="input-group">
@@ -86,23 +101,31 @@
                     </div>
                 </div>
 
-                <!-- Camera Capture -->
+                <!-- Camera Section -->
                 <div class="mb-3 text-center">
                     <video id="video" class="border rounded" width="300" height="200" autoplay></video><br>
-                    <button type="button" id="capture" class="btn btn-primary mt-2"><i class="bi bi-camera"></i> Capture Photo</button>
+                    <button type="button" id="capture" class="btn btn-primary mt-2"><i class="bi bi-camera"></i> Capture
+                        Photo</button>
                 </div>
 
+                <!-- Captured Image Preview -->
+                <div class="mb-3 text-center">
+                    <img id="previewImage" class="img-thumbnail" style="display:none;" width="300" height="200">
+                </div>
+
+                <!-- Hidden Canvas and Image Data -->
                 <canvas id="canvas" width="300" height="200" style="display:none;"></canvas>
                 <input type="hidden" name="image_data" id="image_data">
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-success w-100 mt-3"><i class="bi bi-check-circle"></i> Submit Attendance</button>
+                <!-- Submit -->
+                <button type="submit" class="btn btn-success w-100 mt-3"><i class="bi bi-check-circle"></i> Submit
+                    Attendance</button>
             </form>
         </div>
     </div>
 
     <script>
-        // Auto-fill current date & time
+        // Auto-fill date and time
         function updateDateTime() {
             document.getElementById('datetime').value = new Date().toLocaleString();
         }
@@ -112,28 +135,57 @@
         const canvas = document.getElementById('canvas');
         const captureButton = document.getElementById('capture');
         const imageDataInput = document.getElementById('image_data');
+        const form = document.getElementById('attendanceForm');
+        const previewImage = document.getElementById('previewImage');
 
-        // Access the webcam
+        let stream = null;
+        let cameraAccessible = false;
+
+        // Access webcam
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { video.srcObject = stream; })
-            .catch(error => { console.error("Error accessing webcam:", error); });
+            .then(mediaStream => {
+                stream = mediaStream;
+                video.srcObject = stream;
+                cameraAccessible = true;
+            })
+            .catch(error => {
+                console.error("Webcam error:", error);
+                alert("Camera access is required. Please enable it.");
+            });
 
-        // Capture the image
+        // Capture image and stop camera
         captureButton.addEventListener('click', () => {
+            if (!cameraAccessible) {
+                alert("Camera not accessible.");
+                return;
+            }
+
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Convert to base64 and store in hidden input
             const imageData = canvas.toDataURL('image/png');
             imageDataInput.value = imageData;
 
-            // Display success message
-            alert("Photo captured successfully!");
+            previewImage.src = imageData;
+            previewImage.style.display = 'block';
+
+            // Stop the camera
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+
+            video.style.display = 'none';
+            captureButton.disabled = true;
+        });
+
+        // Prevent form submission if no photo
+        form.addEventListener('submit', (e) => {
+            if (!cameraAccessible || imageDataInput.value.trim() === "") {
+                e.preventDefault();
+                alert("Please capture a photo before submitting.");
+            }
         });
     </script>
 </body>
+
 </html>
-
-
-
-
